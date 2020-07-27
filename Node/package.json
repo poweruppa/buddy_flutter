@@ -1,0 +1,27 @@
+{
+  "name": "node",
+  "version": "1.0.0",
+  "description": "Server for socket communication on Buddy_flutter app",
+  "main": "app.js",
+  "scripts": {
+    "test": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/poweruppa/buddy_server.git"
+  },
+  "keywords": [
+    "buddy",
+    "server",
+    "flutter",
+    "socket",
+    "io",
+    "websockets"
+  ],
+  "author": "Jacobo Benzaquen",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/poweruppa/buddy_server/issues"
+  },
+  "homepage": "https://github.com/poweruppa/buddy_server#readme"
+}
