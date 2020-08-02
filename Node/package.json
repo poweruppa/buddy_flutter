@@ -23,5 +23,12 @@
   "bugs": {
     "url": "https://github.com/poweruppa/buddy_server/issues"
   },
-  "homepage": "https://github.com/poweruppa/buddy_server#readme"
+  "homepage": "https://github.com/poweruppa/buddy_server#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "socket.io": "^2.3.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  }
 }

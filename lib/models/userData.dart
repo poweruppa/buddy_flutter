@@ -5,8 +5,6 @@ class UserData {
   UserData({this.username, this.coins});
 
   factory UserData.fromMap(Map data) {
-    print('map data');
-    print(data);
     data = data ?? {};
     return UserData(
       username: data['username'] ?? '',

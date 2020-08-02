@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:buddy_flutter/size_helpers.dart';
+
 import 'package:google_fonts/google_fonts.dart';
+import 'package:dash_chat/dash_chat.dart';
 
 Widget customTextField(
     {String textToDisplay,
@@ -30,4 +31,10 @@ Widget customRaisedButton(
     color: Colors.black,
     elevation: 10.0,
   );
+}
+
+ChatUser meChatUser(
+  String username,
+) {
+  return ChatUser();
 }

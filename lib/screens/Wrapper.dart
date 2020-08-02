@@ -1,4 +1,4 @@
-import 'package:buddy_flutter/authenticate/authenticate.dart';
+
 import 'package:buddy_flutter/models/user.dart';
 import 'package:buddy_flutter/screens/AuthenticatedUserScreen.dart';
 import 'package:buddy_flutter/screens/WelcomeScreen.dart';

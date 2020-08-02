@@ -2,7 +2,9 @@ import 'package:buddy_flutter/custom_widgets/custom_widgets.dart';
 import 'package:buddy_flutter/custom_widgets/getUsernameForTitle.dart';
 import 'package:buddy_flutter/custom_widgets/loading.dart';
 import 'package:buddy_flutter/models/user.dart';
+import 'package:buddy_flutter/screens/chat_room_screen.dart';
 import 'package:buddy_flutter/services/auth.dart';
+import 'package:buddy_flutter/services/socketIOClient.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -19,15 +21,20 @@ class AuthenticatedUserScreen extends StatefulWidget {
 
 class _AuthenticatedUserScreenState extends State<AuthenticatedUserScreen> {
   final AuthService _auth = AuthService();
+  //final IOService mySocket = IOService();
   bool loading = false;
   @override
   Widget build(BuildContext context) {
     return loading
         ? Loading()
-        : StreamProvider<UserData>.value(
-            value: DatabaseService(uid: Provider.of<User>(context).uid)
-                .userDataStream(),
-            initialData: UserData(username: 'loading', coins: 0),
+        : MultiProvider(
+            providers: [
+              StreamProvider<UserData>.value(
+                value: DatabaseService(uid: Provider.of<User>(context).uid)
+                    .userDataStream(),
+                initialData: UserData(username: 'loading', coins: 0),
+              ),
+            ],
             child: SafeArea(
               child: Scaffold(
                 backgroundColor: Color.fromARGB(255, 178, 223, 219),
@@ -114,9 +121,22 @@ class _AuthenticatedUserScreenState extends State<AuthenticatedUserScreen> {
                                   width: displayWidth(context) * 0.7,
                                   child: customRaisedButton('Look for someone',
                                       () {
-                                    setState(() {
-                                      //loading = true;
+                                    socket.connect();
+                                    socket.on('connect', (_) {
+                                      Provider.of<LoadingChat>(context,
+                                              listen: false)
+                                          .stopLoadingChat();
                                     });
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => ChatRoomScreen(
+                                                loading:
+                                                    Provider.of<LoadingChat>(
+                                                            context)
+                                                        .loadingChat,
+                                              )),
+                                    );
                                   }, displayHeight(context) * 0.03),
                                 )
                               ],

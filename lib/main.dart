@@ -1,10 +1,11 @@
 import 'package:buddy_flutter/models/user.dart';
 import 'package:buddy_flutter/screens/LogInScreen.dart';
 import 'package:buddy_flutter/screens/SignUpScreen.dart';
+import 'package:buddy_flutter/screens/chat_room_screen.dart';
 import 'package:buddy_flutter/services/auth.dart';
+import 'package:buddy_flutter/services/socketIOClient.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'screens/WelcomeScreen.dart';
 import 'screens/Wrapper.dart';
 import 'screens/AuthenticatedUserScreen.dart';
 
@@ -16,8 +17,15 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return StreamProvider<User>.value(
-      value: AuthService().user,
+    return MultiProvider(
+      providers: [
+        StreamProvider<User>.value(
+          value: AuthService().user,
+        ),
+        ChangeNotifierProvider(
+          create: (context) => LoadingChat(),
+        )
+      ],
       child: MaterialApp(
         title: 'Buddy',
         initialRoute: '/',
@@ -26,6 +34,7 @@ class MyApp extends StatelessWidget {
           '/loginScreen': (context) => LogInScreen(),
           '/authenticatedScreen': (context) => AuthenticatedUserScreen(),
           '/signUpScreen': (context) => SignUpScreen(),
+          '/chatRoomScreen': (context) => ChatRoomScreen(),
         },
         theme: ThemeData(
           // This is the theme of your application.

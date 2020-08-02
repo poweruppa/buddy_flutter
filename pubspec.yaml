@@ -33,6 +33,9 @@ dependencies:
   provider: ^4.3.1
   google_fonts: ^1.1.0
   flutter_spinkit: ^4.1.2
+  socket_io_client: ^0.9.10
+  socket_io: ^0.9.4
+  dash_chat: ^1.1.14
 
 dev_dependencies:
   flutter_test:
