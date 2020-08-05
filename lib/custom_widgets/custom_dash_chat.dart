@@ -7,7 +7,9 @@ import 'package:buddy_flutter/size_helpers.dart';
 class CustomDashChat extends StatelessWidget {
   final bool loading;
   final String uid;
-  CustomDashChat({this.uid, this.loading});
+  final BuildContext scaffoldContext;
+  CustomDashChat({this.uid, this.loading, this.scaffoldContext});
+  //final GlobalKey<DashChatState> _chatViewKey = GlobalKey<DashChatState>();
   @override
   Widget build(BuildContext context) {
     return loading
@@ -15,12 +17,12 @@ class CustomDashChat extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                SpinKitChasingDots(
+                SpinKitRing(
                   color: Colors.blueGrey,
                   size: displayHeight(context) * 0.08,
                 ),
                 Padding(
-                  padding: EdgeInsets.only(top: displayHeight(context) * 0.01),
+                  padding: EdgeInsets.only(top: displayHeight(context) * 0.02),
                   child: Text('Connecting to server...'),
                 ),
               ],
@@ -39,5 +41,8 @@ class CustomDashChat extends StatelessWidget {
             ),
             onSend: null,
           );
+//        : Container(
+//            child: Text('you are online'),
+//          );
   }
 }

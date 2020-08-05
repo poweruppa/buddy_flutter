@@ -58,6 +58,10 @@ io.on('connection', function(socket){
         console.log('socket ' + socket.id + ' has disconnected');
     });
 
+    socket.on('login',function(data){
+        console.log(data);
+    });
+
 
     
 });

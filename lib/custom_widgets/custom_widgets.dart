@@ -38,3 +38,20 @@ ChatUser meChatUser(
 ) {
   return ChatUser();
 }
+
+Widget customAlert(
+    {String customTitle,
+    String customDescription,
+    Function firstButtonOnPressed,
+    String firstButtonText,
+    Function secondButtonPressed,
+    String secondButtonText}) {
+  return AlertDialog(
+    title: Text(customTitle),
+    content: Text(customDescription),
+    actions: [
+      FlatButton(onPressed: firstButtonOnPressed, child: Text(firstButtonText)),
+      FlatButton(onPressed: secondButtonPressed, child: Text(secondButtonText)),
+    ],
+  );
+}

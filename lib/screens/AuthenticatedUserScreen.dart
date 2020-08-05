@@ -2,7 +2,6 @@ import 'package:buddy_flutter/custom_widgets/custom_widgets.dart';
 import 'package:buddy_flutter/custom_widgets/getUsernameForTitle.dart';
 import 'package:buddy_flutter/custom_widgets/loading.dart';
 import 'package:buddy_flutter/models/user.dart';
-import 'package:buddy_flutter/screens/chat_room_screen.dart';
 import 'package:buddy_flutter/services/auth.dart';
 import 'package:buddy_flutter/services/socketIOClient.dart';
 import 'package:flutter/cupertino.dart';
@@ -23,8 +22,16 @@ class _AuthenticatedUserScreenState extends State<AuthenticatedUserScreen> {
   final AuthService _auth = AuthService();
   //final IOService mySocket = IOService();
   bool loading = false;
+  String username;
   @override
   Widget build(BuildContext context) {
+//    DatabaseService()
+//        .userDataCollection
+//        .document(Provider.of<User>(context, listen: false).uid)
+//        .get()
+//        .then((value) {
+//      username = value.data['username'];
+//    });
     return loading
         ? Loading()
         : MultiProvider(
@@ -33,6 +40,9 @@ class _AuthenticatedUserScreenState extends State<AuthenticatedUserScreen> {
                 value: DatabaseService(uid: Provider.of<User>(context).uid)
                     .userDataStream(),
                 initialData: UserData(username: 'loading', coins: 0),
+                catchError: (_, error) {
+                  print(error);
+                },
               ),
             ],
             child: SafeArea(
@@ -67,7 +77,7 @@ class _AuthenticatedUserScreenState extends State<AuthenticatedUserScreen> {
                                   FlatButton(
                                     onPressed: () async {
                                       await _auth.signOut();
-                                      Navigator.of(context).pop();
+                                      Navigator.pushNamed(context, '/');
                                     },
                                     child: Text('Yes'),
                                   ),
@@ -122,21 +132,8 @@ class _AuthenticatedUserScreenState extends State<AuthenticatedUserScreen> {
                                   child: customRaisedButton('Look for someone',
                                       () {
                                     socket.connect();
-                                    socket.on('connect', (_) {
-                                      Provider.of<LoadingChat>(context,
-                                              listen: false)
-                                          .stopLoadingChat();
-                                    });
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => ChatRoomScreen(
-                                                loading:
-                                                    Provider.of<LoadingChat>(
-                                                            context)
-                                                        .loadingChat,
-                                              )),
-                                    );
+                                    Navigator.pushNamed(
+                                        context, '/chatRoomScreen');
                                   }, displayHeight(context) * 0.03),
                                 )
                               ],
