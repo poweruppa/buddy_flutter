@@ -2,6 +2,7 @@ import 'package:buddy_flutter/custom_widgets/custom_widgets.dart';
 import 'package:buddy_flutter/custom_widgets/getUsernameForTitle.dart';
 import 'package:buddy_flutter/custom_widgets/loading.dart';
 import 'package:buddy_flutter/models/user.dart';
+import 'package:buddy_flutter/screens/chat_room_screen.dart';
 import 'package:buddy_flutter/services/auth.dart';
 import 'package:buddy_flutter/services/socketIOClient.dart';
 import 'package:flutter/cupertino.dart';
@@ -13,6 +14,8 @@ import 'package:buddy_flutter/services/database.dart';
 import 'package:buddy_flutter/models/userData.dart';
 
 class AuthenticatedUserScreen extends StatefulWidget {
+  final String userUID;
+  AuthenticatedUserScreen({this.userUID});
   @override
   _AuthenticatedUserScreenState createState() =>
       _AuthenticatedUserScreenState();
@@ -20,7 +23,6 @@ class AuthenticatedUserScreen extends StatefulWidget {
 
 class _AuthenticatedUserScreenState extends State<AuthenticatedUserScreen> {
   final AuthService _auth = AuthService();
-  //final IOService mySocket = IOService();
   bool loading = false;
   String username;
   @override
@@ -32,6 +34,7 @@ class _AuthenticatedUserScreenState extends State<AuthenticatedUserScreen> {
 //        .then((value) {
 //      username = value.data['username'];
 //    });
+//    print(username + ' ' + 'this is the username');
     return loading
         ? Loading()
         : MultiProvider(
@@ -132,8 +135,14 @@ class _AuthenticatedUserScreenState extends State<AuthenticatedUserScreen> {
                                   child: customRaisedButton('Look for someone',
                                       () {
                                     socket.connect();
-                                    Navigator.pushNamed(
-                                        context, '/chatRoomScreen');
+//                                    Navigator.pushNamed(
+//                                        context, '/chatRoomScreen');
+                                    Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                ChatRoomScreen(
+                                                  userUID: widget.userUID,
+                                                )));
                                   }, displayHeight(context) * 0.03),
                                 )
                               ],

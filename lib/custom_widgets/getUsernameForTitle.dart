@@ -9,9 +9,17 @@ class UserName extends StatelessWidget {
   Widget build(BuildContext context) {
     final userData = Provider.of<UserData>(context);
     final String username = userData.username;
-    return Text(
-      'Welcome to buddy,\n $username ',
-      style: GoogleFonts.satisfy(fontSize: displayHeight(context) * 0.045),
+    return Column(
+      children: [
+        Text(
+          'Welcome to buddy,',
+          style: GoogleFonts.satisfy(fontSize: displayHeight(context) * 0.045),
+        ),
+        Text(
+          '$username',
+          style: GoogleFonts.satisfy(fontSize: displayHeight(context) * 0.045),
+        ),
+      ],
     );
   }
 }

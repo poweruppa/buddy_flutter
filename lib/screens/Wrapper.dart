@@ -13,7 +13,9 @@ class Wrapper extends StatelessWidget {
     if (userFromMaterialApp == null) {
       return WelcomeScreen();
     } else {
-      return AuthenticatedUserScreen();
+      return AuthenticatedUserScreen(
+        userUID: Provider.of<User>(context).uid,
+      );
     }
   }
 }

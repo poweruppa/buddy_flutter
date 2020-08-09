@@ -1,18 +1,42 @@
+import 'package:buddy_flutter/custom_widgets/customChatView.dart';
+import 'package:buddy_flutter/services/database.dart';
 import 'package:dash_chat/dash_chat.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
+import 'package:provider/provider.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:buddy_flutter/size_helpers.dart';
+import 'package:buddy_flutter/services/chatListProvider.dart';
 
-class CustomDashChat extends StatelessWidget {
+class CustomDashChat extends StatefulWidget {
   final bool loading;
   final String uid;
-  final BuildContext scaffoldContext;
-  CustomDashChat({this.uid, this.loading, this.scaffoldContext});
-  //final GlobalKey<DashChatState> _chatViewKey = GlobalKey<DashChatState>();
+  CustomDashChat({this.uid, this.loading});
+
+  @override
+  _CustomDashChatState createState() => _CustomDashChatState();
+}
+
+class _CustomDashChatState extends State<CustomDashChat> {
+  String username;
+  void userSend(ChatMessage message, ChatUser user) {}
+  @override
+  void initState() {
+    DatabaseService()
+        .userDataCollection
+        .document(widget.uid)
+        .get()
+        .then((value) {
+      username = value.data['username'];
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return loading
+    final String userUID = widget.uid;
+    print(userUID);
+    return widget.loading
         ? Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -28,21 +52,42 @@ class CustomDashChat extends StatelessWidget {
               ],
             ),
           )
-        : DashChat(
-            inputDecoration:
-                InputDecoration.collapsed(hintText: 'Type message here...'),
-            inputContainerStyle: BoxDecoration(
-              color: Color.fromARGB(255, 238, 238, 238),
+        : ChangeNotifierProvider(
+            create: (_) => ChatListProvider(),
+            child: CustomChatView(
+              username: username,
             ),
-            messages: List<ChatMessage>(),
-            user: ChatUser(
-              name: 'Provider.of<UserData>(context).username',
-              uid: 'uid == null ? ' ' : uid',
-            ),
-            onSend: null,
           );
-//        : Container(
-//            child: Text('you are online'),
-//          );
   }
 }
+
+//    CustomChatView(
+//      username: username,
+//    );
+//DashChat(
+//            //key: _chatViewKey,
+//            textController: myTextEditingController,
+//            //scrollController: myScrollController,
+//            textInputAction: TextInputAction.send,
+//            inputDecoration:
+//                InputDecoration.collapsed(hintText: 'Type message here...'),
+//            inputContainerStyle: BoxDecoration(
+//              color: Color.fromARGB(255, 238, 238, 238),
+//            ),
+//            messages: messages,
+//            user: ChatUser(
+//              name: username,
+//              uid: widget.uid,
+//            ),
+//            onSend: (ChatMessage message) {
+//              messages.add(
+//                ChatMessage(
+//                  text: myTextEditingController.text,
+//                  user: ChatUser(
+//                    name: username,
+//                    uid: userUID,
+//                  ),
+//                ),
+//              );
+//            },
+//          );
