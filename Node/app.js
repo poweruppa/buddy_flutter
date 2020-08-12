@@ -62,6 +62,11 @@ io.on('connection', function(socket){
         console.log(data);
     });
 
+    socket.on('sentAMessage',function(data){
+        socket.broadcast.emit('sentAMessage', data);
+        console.log(data);
+    });
+
 
     
 });

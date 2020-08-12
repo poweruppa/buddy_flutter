@@ -3,6 +3,7 @@ import 'package:buddy_flutter/screens/LogInScreen.dart';
 import 'package:buddy_flutter/screens/SignUpScreen.dart';
 import 'package:buddy_flutter/screens/chat_room_screen.dart';
 import 'package:buddy_flutter/services/auth.dart';
+import 'package:buddy_flutter/services/chatListProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'screens/Wrapper.dart';
@@ -25,6 +26,9 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (context) => LoadingChat(),
         ),
+        ChangeNotifierProvider(
+          create: (context) => ChatListProvider(),
+        )
       ],
       child: MaterialApp(
         title: 'Buddy',

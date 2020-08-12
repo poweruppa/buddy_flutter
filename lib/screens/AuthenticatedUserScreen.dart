@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:buddy_flutter/custom_widgets/custom_widgets.dart';
 import 'package:buddy_flutter/custom_widgets/getUsernameForTitle.dart';
 import 'package:buddy_flutter/custom_widgets/loading.dart';
@@ -12,6 +14,8 @@ import 'package:buddy_flutter/size_helpers.dart';
 import 'package:provider/provider.dart';
 import 'package:buddy_flutter/services/database.dart';
 import 'package:buddy_flutter/models/userData.dart';
+import 'package:buddy_flutter/services/chatListProvider.dart';
+import 'package:buddy_flutter/custom_widgets/MessageBubble.dart';
 
 class AuthenticatedUserScreen extends StatefulWidget {
   final String userUID;
@@ -135,8 +139,17 @@ class _AuthenticatedUserScreenState extends State<AuthenticatedUserScreen> {
                                   child: customRaisedButton('Look for someone',
                                       () {
                                     socket.connect();
-//                                    Navigator.pushNamed(
-//                                        context, '/chatRoomScreen');
+                                    socket.on('sentAMessage', (data) {
+                                      print(jsonDecode(data));
+                                      var decodedData = jsonDecode(data);
+                                      Provider.of<ChatListProvider>(context,
+                                              listen: false)
+                                          .addMessageToChat(MessageBubble(
+                                        sender: decodedData['sender'],
+                                        text: decodedData['text'],
+                                        isMe: false,
+                                      ));
+                                    });
                                     Navigator.of(context).push(
                                         MaterialPageRoute(
                                             builder: (context) =>

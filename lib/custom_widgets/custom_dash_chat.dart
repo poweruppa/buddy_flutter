@@ -3,10 +3,9 @@ import 'package:buddy_flutter/services/database.dart';
 import 'package:dash_chat/dash_chat.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:buddy_flutter/size_helpers.dart';
-import 'package:buddy_flutter/services/chatListProvider.dart';
 
 class CustomDashChat extends StatefulWidget {
   final bool loading;
@@ -20,6 +19,7 @@ class CustomDashChat extends StatefulWidget {
 class _CustomDashChatState extends State<CustomDashChat> {
   String username;
   void userSend(ChatMessage message, ChatUser user) {}
+
   @override
   void initState() {
     DatabaseService()
@@ -52,12 +52,14 @@ class _CustomDashChatState extends State<CustomDashChat> {
               ],
             ),
           )
-        : ChangeNotifierProvider(
-            create: (_) => ChatListProvider(),
-            child: CustomChatView(
-              username: username,
-            ),
+        :
+        //ChangeNotifierProvider(
+        //        create: (_) => ChatListProvider(),
+        //   child:
+        CustomChatView(
+            username: username,
           );
+    //     );
   }
 }
 

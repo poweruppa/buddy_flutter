@@ -6,6 +6,15 @@ class MessageBubble extends StatelessWidget {
   final String sender;
   final String text;
   final bool isMe;
+
+  MessageBubble.fromJson(Map<String, dynamic> json)
+      : sender = json['sender'],
+        text = json['text'],
+        isMe = json['isMe'];
+
+  Map<String, dynamic> toJson() =>
+      {'sender': sender, 'text': text, 'isMe': isMe};
+
   @override
   Widget build(BuildContext context) {
     return Padding(

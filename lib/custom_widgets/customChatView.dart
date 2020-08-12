@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:buddy_flutter/services/chatListProvider.dart';
+import 'package:buddy_flutter/services/socketIOClient.dart';
 import 'package:flutter/material.dart';
 import 'package:buddy_flutter/custom_widgets/MessageBubble.dart';
 import 'package:provider/provider.dart';
@@ -13,9 +16,29 @@ class CustomChatView extends StatefulWidget {
 class _CustomChatViewState extends State<CustomChatView> {
   final messageTextController = TextEditingController();
   String messageText;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
+  @override
+  void didUpdateWidget(CustomChatView oldWidget) {
+    // TODO: implement didUpdateWidget
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    print(widget.username);
+    //print(widget.username);
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -48,6 +71,13 @@ class _CustomChatViewState extends State<CustomChatView> {
                   onEditingComplete: () {
                     messageTextController.clear();
                     //Implement send functionality.
+                    var messageBubbleToSend = {
+                      'sender': widget.username,
+                      'text': messageText,
+                      'isMe': true,
+                    };
+                    socket.emit(
+                        'sentAMessage', jsonEncode(messageBubbleToSend));
                     Provider.of<ChatListProvider>(context, listen: false)
                         .addMessageToChat(MessageBubble(
                       sender: widget.username,
@@ -67,6 +97,12 @@ class _CustomChatViewState extends State<CustomChatView> {
                 onPressed: () {
                   messageTextController.clear();
                   //Implement send functionality.
+                  var messageBubbleToSend = {
+                    'sender': widget.username,
+                    'text': messageText,
+                    'isMe': true,
+                  };
+                  socket.emit('sentAMessage', jsonEncode(messageBubbleToSend));
                   Provider.of<ChatListProvider>(context, listen: false)
                       .addMessageToChat(MessageBubble(
                     sender: widget.username,
