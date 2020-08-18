@@ -34,8 +34,6 @@ class _CustomDashChatState extends State<CustomDashChat> {
 
   @override
   Widget build(BuildContext context) {
-    final String userUID = widget.uid;
-    print(userUID);
     return widget.loading
         ? Center(
             child: Column(

@@ -1,6 +1,6 @@
 import 'package:buddy_flutter/custom_widgets/custom_dash_chat.dart';
-import 'package:buddy_flutter/models/user.dart';
 import 'package:buddy_flutter/models/userData.dart';
+import 'package:buddy_flutter/services/chatListProvider.dart';
 import 'package:buddy_flutter/services/socketIOClient.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -16,17 +16,10 @@ class ChatRoomScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    socket.on('disconnect', (_) {
-      Provider.of<LoadingChat>(context, listen: false).startLoadingChat();
-    });
-    socket.on('connect', (_) {
-      Provider.of<LoadingChat>(context, listen: false).stopLoadingChat();
-    });
     return MultiProvider(
       providers: [
         StreamProvider<UserData>.value(
-          value: DatabaseService(uid: Provider.of<User>(context).uid)
-              .userDataStream(),
+          value: DatabaseService(uid: userUID).userDataStream(),
           initialData: UserData(username: 'loading', coins: 0),
           catchError: (_, error) {
             print(error);
@@ -58,7 +51,7 @@ class ChatRoomScreen extends StatelessWidget {
                     onPressed: () {
                       showDialog(
                         context: context,
-                        builder: (BuildContext context) => AlertDialog(
+                        builder: (BuildContext contextBuilder) => AlertDialog(
                           title: Text("Close"),
                           content:
                               Text("Are you sure you want exit this chat?"),
@@ -66,13 +59,18 @@ class ChatRoomScreen extends StatelessWidget {
                             FlatButton(
                               onPressed: () {
                                 //Navigator.of(context, rootNavigator: true).pop();
+
+//                                socket.on('disconnect', (_) {
+//                                  Provider.of<LoadingChat>(context,
+//                                          listen: false)
+//                                      .startLoadingChat();
+//                                });
                                 socket.disconnect();
-                                socket.on('disconnect', (_) {
-                                  Provider.of<LoadingChat>(context,
-                                          listen: false)
-                                      .startLoadingChat();
-                                });
-                                Navigator.pushNamed(context, '/');
+                                Provider.of<ChatListProvider>(context,
+                                        listen: false)
+                                    .eraseChatMessages();
+                                Navigator.pop(context);
+                                Navigator.pop(context);
                               },
                               child: Text('Yes'),
                             ),

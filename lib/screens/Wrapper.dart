@@ -8,7 +8,13 @@ class Wrapper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final userFromMaterialApp = Provider.of<User>(context);
+    //String userUid;
     print(userFromMaterialApp);
+//    if (Provider.of<User>(context).uid == null) {
+//      userUid = null;
+//    } else {
+//      userUid = Provider.of<User>(context).uid;
+//    }
     //return home or Authenticate Widget
     if (userFromMaterialApp == null) {
       return WelcomeScreen();

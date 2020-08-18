@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'package:buddy_flutter/services/loading_chat.dart';
 import 'package:buddy_flutter/custom_widgets/custom_widgets.dart';
 import 'package:buddy_flutter/custom_widgets/getUsernameForTitle.dart';
 import 'package:buddy_flutter/custom_widgets/loading.dart';
@@ -19,6 +19,7 @@ import 'package:buddy_flutter/custom_widgets/MessageBubble.dart';
 
 class AuthenticatedUserScreen extends StatefulWidget {
   final String userUID;
+
   AuthenticatedUserScreen({this.userUID});
   @override
   _AuthenticatedUserScreenState createState() =>
@@ -29,16 +30,35 @@ class _AuthenticatedUserScreenState extends State<AuthenticatedUserScreen> {
   final AuthService _auth = AuthService();
   bool loading = false;
   String username;
+
+  void _getUsername() {
+    if (username == null) {
+      print('username is null');
+      loading = true;
+      DatabaseService()
+          .userDataCollection
+          .document(Provider.of<User>(context, listen: false).uid)
+          .get()
+          .then((value) {
+        username = value.data['username'];
+      }).then((value) {
+        setState(() {
+          loading = false;
+        });
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    _getUsername();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-//    DatabaseService()
-//        .userDataCollection
-//        .document(Provider.of<User>(context, listen: false).uid)
-//        .get()
-//        .then((value) {
-//      username = value.data['username'];
-//    });
-//    print(username + ' ' + 'this is the username');
+    //print(username + ' ' + 'this is the username');
     return loading
         ? Loading()
         : MultiProvider(
@@ -121,7 +141,9 @@ class _AuthenticatedUserScreenState extends State<AuthenticatedUserScreen> {
                                   children: [
                                     Container(
                                       alignment: Alignment.center,
-                                      child: UserName(),
+                                      child: UserName(
+                                        username: username,
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -139,6 +161,17 @@ class _AuthenticatedUserScreenState extends State<AuthenticatedUserScreen> {
                                   child: customRaisedButton('Look for someone',
                                       () {
                                     socket.connect();
+                                    socket.on('connect', (_) {
+                                      Provider.of<LoadingChat>(context,
+                                              listen: false)
+                                          .stopLoadingChat();
+                                    });
+                                    socket.on('disconnect', (_) {
+                                      Provider.of<LoadingChat>(context,
+                                              listen: false)
+                                          .startLoadingChat();
+                                    });
+
                                     socket.on('sentAMessage', (data) {
                                       print(jsonDecode(data));
                                       var decodedData = jsonDecode(data);

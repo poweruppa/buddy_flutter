@@ -38,7 +38,6 @@ class _CustomChatViewState extends State<CustomChatView> {
   @override
   Widget build(BuildContext context) {
     //print(widget.username);
-
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.stretch,

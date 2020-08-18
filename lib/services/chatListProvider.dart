@@ -14,4 +14,15 @@ class ChatListProvider extends ChangeNotifier {
     messages.insert(0, message);
     notifyListeners();
   }
+
+  void eraseChatMessages() {
+    messages = [
+      MessageBubble(
+        sender: 'Server',
+        text: "You're connected",
+        isMe: false,
+      )
+    ];
+    notifyListeners();
+  }
 }
