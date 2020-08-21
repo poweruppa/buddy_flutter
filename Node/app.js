@@ -52,22 +52,23 @@ io.on('connection', function(socket){
     socket.on('typing',function(data){
         socket.broadcast.emit('typing',data)
     });
-    
-    
+    //listen for disconnect
     socket.on('disconnect', function () {
         console.log('socket ' + socket.id + ' has disconnected');
     });
-
+    //to implement listen to login
     socket.on('login',function(data){
         console.log(data);
     });
-
+    //listen for sentAMessage command from flutter app
     socket.on('sentAMessage',function(data){
         socket.broadcast.emit('sentAMessage', data);
         console.log(data);
     });
-
-
-    
+    //
+    socket.on('sendUsernameToServer',function(data){
+        socket.broadcast.emit('sendUsernameToServer', data);
+        console.log(data);
+    });
 });
 

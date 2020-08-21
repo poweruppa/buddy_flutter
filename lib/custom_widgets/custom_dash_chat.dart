@@ -1,6 +1,5 @@
 import 'package:buddy_flutter/custom_widgets/customChatView.dart';
 import 'package:buddy_flutter/services/database.dart';
-import 'package:dash_chat/dash_chat.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -18,7 +17,6 @@ class CustomDashChat extends StatefulWidget {
 
 class _CustomDashChatState extends State<CustomDashChat> {
   String username;
-  void userSend(ChatMessage message, ChatUser user) {}
 
   @override
   void initState() {
@@ -50,44 +48,8 @@ class _CustomDashChatState extends State<CustomDashChat> {
               ],
             ),
           )
-        :
-        //ChangeNotifierProvider(
-        //        create: (_) => ChatListProvider(),
-        //   child:
-        CustomChatView(
+        : CustomChatView(
             username: username,
           );
-    //     );
   }
 }
-
-//    CustomChatView(
-//      username: username,
-//    );
-//DashChat(
-//            //key: _chatViewKey,
-//            textController: myTextEditingController,
-//            //scrollController: myScrollController,
-//            textInputAction: TextInputAction.send,
-//            inputDecoration:
-//                InputDecoration.collapsed(hintText: 'Type message here...'),
-//            inputContainerStyle: BoxDecoration(
-//              color: Color.fromARGB(255, 238, 238, 238),
-//            ),
-//            messages: messages,
-//            user: ChatUser(
-//              name: username,
-//              uid: widget.uid,
-//            ),
-//            onSend: (ChatMessage message) {
-//              messages.add(
-//                ChatMessage(
-//                  text: myTextEditingController.text,
-//                  user: ChatUser(
-//                    name: username,
-//                    uid: userUID,
-//                  ),
-//                ),
-//              );
-//            },
-//          );

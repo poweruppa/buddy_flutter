@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:buddy_flutter/custom_widgets/active_chat_button.dart';
+import 'package:buddy_flutter/services/active_chats_provider.dart';
 import 'package:buddy_flutter/services/loading_chat.dart';
 import 'package:buddy_flutter/custom_widgets/custom_widgets.dart';
 import 'package:buddy_flutter/custom_widgets/getUsernameForTitle.dart';
@@ -42,6 +44,9 @@ class _AuthenticatedUserScreenState extends State<AuthenticatedUserScreen> {
           .then((value) {
         username = value.data['username'];
       }).then((value) {
+        if (!mounted) {
+          return;
+        }
         setState(() {
           loading = false;
         });
@@ -133,64 +138,91 @@ class _AuthenticatedUserScreenState extends State<AuthenticatedUserScreen> {
                               ),
                             ),
                             child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: <Widget>[
                                 Row(
-                                  //mainAxisAlignment: MainAxisAlignment.center,
                                   mainAxisAlignment: MainAxisAlignment.center,
+                                  //mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Container(
-                                      alignment: Alignment.center,
+                                      padding: EdgeInsets.only(
+                                          top: displayHeight(context) * 0.02),
+                                      //alignment: Alignment.center,
                                       child: UserName(
                                         username: username,
                                       ),
                                     ),
                                   ],
                                 ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      'Use the button below to chat with a random person',
-                                    ),
-                                  ],
+//                                Row(
+//                                  mainAxisAlignment: MainAxisAlignment.center,
+//                                  children: [
+//                                    Text(
+//                                      "Your friend list is empty. It's time to find some friends! ",
+//                                    ),
+//                                  ],
+//                                ),
+                                Container(
+                                  height: displayHeight(context) * 0.7,
+                                  //child: ActiveChatsListView(),
                                 ),
                                 Container(
-                                  height: displayHeight(context) * 0.08,
-                                  width: displayWidth(context) * 0.7,
-                                  child: customRaisedButton('Look for someone',
-                                      () {
-                                    socket.connect();
-                                    socket.on('connect', (_) {
-                                      Provider.of<LoadingChat>(context,
-                                              listen: false)
-                                          .stopLoadingChat();
-                                    });
-                                    socket.on('disconnect', (_) {
-                                      Provider.of<LoadingChat>(context,
-                                              listen: false)
-                                          .startLoadingChat();
-                                    });
-
-                                    socket.on('sentAMessage', (data) {
-                                      print(jsonDecode(data));
-                                      var decodedData = jsonDecode(data);
-                                      Provider.of<ChatListProvider>(context,
-                                              listen: false)
-                                          .addMessageToChat(MessageBubble(
-                                        sender: decodedData['sender'],
-                                        text: decodedData['text'],
-                                        isMe: false,
-                                      ));
-                                    });
-                                    Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                ChatRoomScreen(
-                                                  userUID: widget.userUID,
-                                                )));
-                                  }, displayHeight(context) * 0.03),
-                                )
+                                    height: displayHeight(context) * 0.08,
+                                    width: displayWidth(context) * 0.7,
+                                    child: ActiveChatsListView(
+                                      userUID: widget.userUID,
+                                      username: username,
+                                    )
+//                                  customRaisedButton('Look for someone',
+//                                      () {
+//                                    socket.connect();
+//                                    socket.on('connect', (_) {
+//                                      Provider.of<LoadingChat>(context,
+//                                              listen: false)
+//                                          .stopLoadingChat();
+//                                      Provider.of<ActiveChatsProvider>(context,
+//                                              listen: false)
+//                                          .addUsernameToActiveChatList(
+//                                              'otherUserUsername');
+//                                      print(Provider.of<ActiveChatsProvider>(
+//                                              context,
+//                                              listen: false)
+//                                          .activeChatsUsername
+//                                          .length);
+//                                    });
+//                                    socket.on('disconnect', (_) {
+//                                      Provider.of<LoadingChat>(context,
+//                                              listen: false)
+//                                          .startLoadingChat();
+//                                      Provider.of<ActiveChatsProvider>(context,
+//                                              listen: false)
+//                                          .eraseUsernameFromActiveChatList(
+//                                              'otherUserUsername');
+//                                      print(Provider.of<ActiveChatsProvider>(
+//                                              context,
+//                                              listen: false)
+//                                          .activeChatsUsername
+//                                          .length);
+//                                    });
+//                                    socket.on('sentAMessage', (data) {
+//                                      print(jsonDecode(data));
+//                                      var decodedData = jsonDecode(data);
+//                                      Provider.of<ChatListProvider>(context,
+//                                              listen: false)
+//                                          .addMessageToChat(MessageBubble(
+//                                        sender: decodedData['sender'],
+//                                        text: decodedData['text'],
+//                                        isMe: false,
+//                                      ));
+//                                    });
+//                                    Navigator.of(context).push(
+//                                        MaterialPageRoute(
+//                                            builder: (context) =>
+//                                                ChatRoomScreen(
+//                                                  userUID: widget.userUID,
+//                                                )));
+//                                  }, displayHeight(context) * 0.03),
+                                    )
                               ],
                             ),
                           ),

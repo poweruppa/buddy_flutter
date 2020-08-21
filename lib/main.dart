@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 import 'screens/Wrapper.dart';
 import 'screens/AuthenticatedUserScreen.dart';
 import 'services/loading_chat.dart';
+import 'services/active_chats_provider.dart';
 
 void main() {
   runApp(MyApp());
@@ -28,6 +29,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (context) => ChatListProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => ActiveChatsProvider(),
         )
       ],
       child: MaterialApp(

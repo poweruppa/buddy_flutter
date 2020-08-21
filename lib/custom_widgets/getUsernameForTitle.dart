@@ -9,10 +9,10 @@ class UserName extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text(
-          'Welcome to buddy,',
-          style: GoogleFonts.satisfy(fontSize: displayHeight(context) * 0.045),
-        ),
+//        Text(
+//          'Welcome to buddy,',
+//          style: GoogleFonts.satisfy(fontSize: displayHeight(context) * 0.045),
+//        ),
         Text(
           '$username',
           style: GoogleFonts.satisfy(fontSize: displayHeight(context) * 0.045),

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import 'package:google_fonts/google_fonts.dart';
-import 'package:dash_chat/dash_chat.dart';
 
 Widget customTextField(
     {String textToDisplay,
@@ -33,11 +32,11 @@ Widget customRaisedButton(
   );
 }
 
-ChatUser meChatUser(
-  String username,
-) {
-  return ChatUser();
-}
+//ChatUser meChatUser(
+//  String username,
+//) {
+//  return ChatUser();
+//}
 
 Widget customAlert(
     {String customTitle,
