@@ -25,6 +25,7 @@ class ActiveChatsListView extends StatelessWidget {
                 socket.emit('sendUsernameToServer', username);
               });
               socket.on('disconnect', (_) {
+                socket.clearListeners();
                 Provider.of<LoadingChat>(context, listen: false)
                     .startLoadingChat();
               });
@@ -72,7 +73,7 @@ class ActiveChatsListView extends StatelessWidget {
                     'Return to Random Chat',
                     style: GoogleFonts.mPlusRounded1c(
                         color: Colors.white,
-                        fontSize: displayHeight(context) * 0.02),
+                        fontSize: displayHeight(context) * 0.03),
                   )
                 : Text(
                     'Keep Chatting with' +

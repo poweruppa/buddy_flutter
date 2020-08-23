@@ -65,7 +65,7 @@ io.on('connection', function(socket){
         socket.broadcast.emit('sentAMessage', data);
         console.log(data);
     });
-    //
+    //liston for usernmae sent from server
     socket.on('sendUsernameToServer',function(data){
         socket.broadcast.emit('sendUsernameToServer', data);
         console.log(data);

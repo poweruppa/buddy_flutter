@@ -1,14 +1,11 @@
 import 'dart:convert';
+
 import 'package:buddy_flutter/custom_widgets/active_chat_button.dart';
-import 'package:buddy_flutter/services/active_chats_provider.dart';
-import 'package:buddy_flutter/services/loading_chat.dart';
-import 'package:buddy_flutter/custom_widgets/custom_widgets.dart';
 import 'package:buddy_flutter/custom_widgets/getUsernameForTitle.dart';
 import 'package:buddy_flutter/custom_widgets/loading.dart';
 import 'package:buddy_flutter/models/user.dart';
-import 'package:buddy_flutter/screens/chat_room_screen.dart';
 import 'package:buddy_flutter/services/auth.dart';
-import 'package:buddy_flutter/services/socketIOClient.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -16,12 +13,16 @@ import 'package:buddy_flutter/size_helpers.dart';
 import 'package:provider/provider.dart';
 import 'package:buddy_flutter/services/database.dart';
 import 'package:buddy_flutter/models/userData.dart';
-import 'package:buddy_flutter/services/chatListProvider.dart';
+import 'package:buddy_flutter/services/loading_chat.dart';
+import 'package:buddy_flutter/custom_widgets/custom_widgets.dart';
+import 'package:buddy_flutter/services/socketIOClient.dart';
 import 'package:buddy_flutter/custom_widgets/MessageBubble.dart';
+import 'package:buddy_flutter/screens/chat_room_screen.dart';
+import 'package:buddy_flutter/services/chatListProvider.dart';
 
 class AuthenticatedUserScreen extends StatefulWidget {
   final String userUID;
-
+//  final GlobalKey inheritedContext;
   AuthenticatedUserScreen({this.userUID});
   @override
   _AuthenticatedUserScreenState createState() =>
@@ -32,6 +33,7 @@ class _AuthenticatedUserScreenState extends State<AuthenticatedUserScreen> {
   final AuthService _auth = AuthService();
   bool loading = false;
   String username;
+  GlobalKey _scaffoldKey = GlobalKey();
 
   void _getUsername() {
     if (username == null) {
@@ -62,6 +64,12 @@ class _AuthenticatedUserScreenState extends State<AuthenticatedUserScreen> {
   }
 
   @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     //print(username + ' ' + 'this is the username');
     return loading
@@ -79,6 +87,7 @@ class _AuthenticatedUserScreenState extends State<AuthenticatedUserScreen> {
             ],
             child: SafeArea(
               child: Scaffold(
+                key: _scaffoldKey,
                 backgroundColor: Color.fromARGB(255, 178, 223, 219),
                 body: Column(
                   children: <Widget>[
@@ -109,7 +118,8 @@ class _AuthenticatedUserScreenState extends State<AuthenticatedUserScreen> {
                                   FlatButton(
                                     onPressed: () async {
                                       await _auth.signOut();
-                                      Navigator.pushNamed(context, '/');
+                                      Navigator.pop(context);
+                                      //socket.disconnect();
                                     },
                                     child: Text('Yes'),
                                   ),
@@ -173,36 +183,19 @@ class _AuthenticatedUserScreenState extends State<AuthenticatedUserScreen> {
                                       userUID: widget.userUID,
                                       username: username,
                                     )
-//                                  customRaisedButton('Look for someone',
+//                                  child: customRaisedButton('Look for someone',
 //                                      () {
 //                                    socket.connect();
 //                                    socket.on('connect', (_) {
 //                                      Provider.of<LoadingChat>(context,
 //                                              listen: false)
 //                                          .stopLoadingChat();
-//                                      Provider.of<ActiveChatsProvider>(context,
-//                                              listen: false)
-//                                          .addUsernameToActiveChatList(
-//                                              'otherUserUsername');
-//                                      print(Provider.of<ActiveChatsProvider>(
-//                                              context,
-//                                              listen: false)
-//                                          .activeChatsUsername
-//                                          .length);
 //                                    });
 //                                    socket.on('disconnect', (_) {
+//                                      socket.clearListeners();
 //                                      Provider.of<LoadingChat>(context,
 //                                              listen: false)
 //                                          .startLoadingChat();
-//                                      Provider.of<ActiveChatsProvider>(context,
-//                                              listen: false)
-//                                          .eraseUsernameFromActiveChatList(
-//                                              'otherUserUsername');
-//                                      print(Provider.of<ActiveChatsProvider>(
-//                                              context,
-//                                              listen: false)
-//                                          .activeChatsUsername
-//                                          .length);
 //                                    });
 //                                    socket.on('sentAMessage', (data) {
 //                                      print(jsonDecode(data));
@@ -222,7 +215,7 @@ class _AuthenticatedUserScreenState extends State<AuthenticatedUserScreen> {
 //                                                  userUID: widget.userUID,
 //                                                )));
 //                                  }, displayHeight(context) * 0.03),
-                                    )
+                                    ),
                               ],
                             ),
                           ),

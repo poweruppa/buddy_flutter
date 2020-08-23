@@ -18,4 +18,6 @@ class LoadingChat extends ChangeNotifier {
     loadingChat = false;
     notifyListeners();
   }
+
+  void unsubscribeFromLoadingChat() {}
 }
