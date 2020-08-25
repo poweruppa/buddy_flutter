@@ -147,9 +147,13 @@ class _AuthenticatedUserScreenState extends State<AuthenticatedUserScreen> {
                                   actions: <Widget>[
                                     FlatButton(
                                       onPressed: () async {
+                                        socket.clearListeners();
+                                        socket.disconnect();
+                                        Provider.of<LoadingChat>(context,
+                                                listen: false)
+                                            .startLoadingChat();
                                         await _auth.signOut();
                                         Navigator.pop(context);
-                                        //socket.disconnect();
                                       },
                                       child: Text('Yes'),
                                     ),
