@@ -22,6 +22,7 @@ import 'package:buddy_flutter/services/chatListProvider.dart';
 
 class AuthenticatedUserScreen extends StatefulWidget {
   final String userUID;
+
 //  final GlobalKey inheritedContext;
   AuthenticatedUserScreen({this.userUID});
   @override
@@ -105,35 +106,75 @@ class _AuthenticatedUserScreenState extends State<AuthenticatedUserScreen> {
                             ),
                           ),
                         ),
-                        IconButton(
-                          icon: Icon(Icons.close),
-                          onPressed: () {
-                            showDialog(
-                              context: context,
-                              builder: (context) => AlertDialog(
-                                title: Text("Log Out"),
-                                content:
-                                    Text("Are you sure you want to log out?"),
-                                actions: <Widget>[
-                                  FlatButton(
-                                    onPressed: () async {
-                                      await _auth.signOut();
-                                      Navigator.pop(context);
-                                      //socket.disconnect();
-                                    },
-                                    child: Text('Yes'),
-                                  ),
-                                  FlatButton(
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                    child: Text('Close'),
-                                  ),
-                                ],
-                              ),
-                            );
+//                        IconButton(
+//                          icon: Icon(Icons.close),
+//                          onPressed: () {
+//                            showDialog(
+//                              context: context,
+//                              builder: (context) => AlertDialog(
+//                                title: Text("Log Out"),
+//                                content:
+//                                    Text("Are you sure you want to log out?"),
+//                                actions: <Widget>[
+//                                  FlatButton(
+//                                    onPressed: () async {
+//                                      await _auth.signOut();
+//                                      Navigator.pop(context);
+//                                      //socket.disconnect();
+//                                    },
+//                                    child: Text('Yes'),
+//                                  ),
+//                                  FlatButton(
+//                                    onPressed: () {
+//                                      Navigator.of(context).pop();
+//                                    },
+//                                    child: Text('Close'),
+//                                  ),
+//                                ],
+//                              ),
+//                            );
+//                          },
+//                        ),
+                        PopupMenuButton(
+                          onSelected: (value) {
+                            if (value == 2) {
+                              showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  title: Text("Log Out"),
+                                  content:
+                                      Text("Are you sure you want to log out?"),
+                                  actions: <Widget>[
+                                    FlatButton(
+                                      onPressed: () async {
+                                        await _auth.signOut();
+                                        Navigator.pop(context);
+                                        //socket.disconnect();
+                                      },
+                                      child: Text('Yes'),
+                                    ),
+                                    FlatButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: Text('Close'),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }
                           },
-                        ),
+                          itemBuilder: (context) => [
+                            PopupMenuItem(
+                              value: 1,
+                              child: Text('Profile'),
+                            ),
+                            PopupMenuItem(
+                              value: 2,
+                              child: Text('Log Out'),
+                            )
+                          ],
+                        )
                       ],
                     ),
                     Expanded(

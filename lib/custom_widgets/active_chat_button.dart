@@ -73,7 +73,7 @@ class ActiveChatsListView extends StatelessWidget {
                     'Return to Random Chat',
                     style: GoogleFonts.mPlusRounded1c(
                         color: Colors.white,
-                        fontSize: displayHeight(context) * 0.03),
+                        fontSize: displayHeight(context) * 0.025),
                   )
                 : Text(
                     'Keep Chatting with' +
