@@ -1,4 +1,3 @@
-import 'package:buddy_flutter/models/userData.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class DatabaseService {
@@ -21,28 +20,18 @@ class DatabaseService {
     });
   }
 
-//  Future<String> getUserName() async {
-//    String username;
-//    await userDataCollection.document(uid).get().then((value) {
-//      String username = value.data['username'];
-//    });
-//    print(username);
-//    return username;
-//    //    DatabaseService()
-////        .userDataCollection
-////        .document(Provider.of<User>(context, listen: false).uid)
-////        .get()
-////        .then((value) {
-////      username = value.data['username'];
-////    });
-//  }
-
   //get userDataCollection stream and create a UserData object from it
-  Stream<UserData> userDataStream() {
-//    if (uid == null) {
-//      return;
-//    }
-    var snapshots = userDataCollection.document(uid).snapshots();
-    return snapshots.map((snapshots) => UserData.fromMap(snapshots.data));
+//  Stream<UserData> get userDataStream {
+////    if (uid == null) {
+////      return;
+////    }
+//    print(uid);
+//    var snapshots = userDataCollection.document(uid).snapshots();
+//    return snapshots.map((snapshots) => UserData.fromJson(snapshots.data));
+//  }
+  Stream<DocumentSnapshot> get userDataStream {
+    print(uid);
+    return userDataCollection.document(uid).snapshots();
+    //return snapshots.map((snapshots) => UserData.fromJson(snapshots.data));
   }
 }

@@ -2,6 +2,7 @@ import 'package:buddy_flutter/models/user.dart';
 import 'package:buddy_flutter/screens/LogInScreen.dart';
 import 'package:buddy_flutter/screens/SignUpScreen.dart';
 import 'package:buddy_flutter/screens/chat_room_screen.dart';
+import 'package:buddy_flutter/screens/profile_screen.dart';
 import 'package:buddy_flutter/services/auth.dart';
 import 'package:buddy_flutter/services/chatListProvider.dart';
 import 'package:flutter/material.dart';
@@ -26,9 +27,6 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (context) => LoadingChat(),
         ),
-//        ChangeNotifierProvider.value(
-//          value: LoadingChat(),
-//        ),
         ChangeNotifierProvider(
           create: (context) => ChatListProvider(),
         ),
@@ -42,6 +40,7 @@ class MyApp extends StatelessWidget {
           '/authenticatedScreen': (context) => AuthenticatedUserScreen(),
           '/signUpScreen': (context) => SignUpScreen(),
           '/chatRoomScreen': (context) => ChatRoomScreen(),
+          '/profileScreen': (context) => ProfileScreen(),
         },
         theme: ThemeData(
           // This is the theme of your application.

@@ -1,9 +1,8 @@
-import 'dart:convert';
-
 import 'package:buddy_flutter/custom_widgets/custom_dash_chat.dart';
 import 'package:buddy_flutter/models/userData.dart';
 import 'package:buddy_flutter/services/chatListProvider.dart';
 import 'package:buddy_flutter/services/socketIOClient.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -11,7 +10,6 @@ import 'package:buddy_flutter/size_helpers.dart';
 import 'package:provider/provider.dart';
 import 'package:buddy_flutter/services/loading_chat.dart';
 import 'package:buddy_flutter/services/database.dart';
-import 'package:buddy_flutter/custom_widgets/MessageBubble.dart';
 
 class ChatRoomScreen extends StatefulWidget {
   final String userUID;
@@ -32,9 +30,9 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        StreamProvider<UserData>.value(
-          value: DatabaseService(uid: widget.userUID).userDataStream(),
-          initialData: UserData(username: 'loading', coins: 0),
+        StreamProvider<DocumentSnapshot>.value(
+          value: DatabaseService().userDataStream,
+          //initialData: UserData(username: 'loading', coins: 0),
           catchError: (_, error) {
             print(error);
           },
