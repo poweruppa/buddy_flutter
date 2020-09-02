@@ -2,13 +2,14 @@ import 'dart:convert';
 
 import 'package:buddy_flutter/services/chatListProvider.dart';
 import 'package:buddy_flutter/services/socketIOClient.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:buddy_flutter/custom_widgets/MessageBubble.dart';
 import 'package:provider/provider.dart';
 
 class CustomChatView extends StatefulWidget {
-  final String username;
-  CustomChatView({this.username});
+//  final String username;
+//  CustomChatView({this.username});
   @override
   _CustomChatViewState createState() => _CustomChatViewState();
 }
@@ -37,7 +38,6 @@ class _CustomChatViewState extends State<CustomChatView> {
 
   @override
   Widget build(BuildContext context) {
-    //print(widget.username);
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -71,7 +71,9 @@ class _CustomChatViewState extends State<CustomChatView> {
                     messageTextController.clear();
                     //Implement send functionality.
                     var messageBubbleToSend = {
-                      'sender': widget.username,
+                      'sender':
+                          Provider.of<DocumentSnapshot>(context, listen: false)
+                              .data['username'],
                       'text': messageText,
                       'isMe': true,
                     };
@@ -79,7 +81,9 @@ class _CustomChatViewState extends State<CustomChatView> {
                         'sentAMessage', jsonEncode(messageBubbleToSend));
                     Provider.of<ChatListProvider>(context, listen: false)
                         .addMessageToChat(MessageBubble(
-                      sender: widget.username,
+                      sender:
+                          Provider.of<DocumentSnapshot>(context, listen: false)
+                              .data['username'],
                       text: messageText,
                       isMe: true,
                     ));
@@ -97,14 +101,18 @@ class _CustomChatViewState extends State<CustomChatView> {
                   messageTextController.clear();
                   //Implement send functionality.
                   var messageBubbleToSend = {
-                    'sender': widget.username,
+                    'sender':
+                        Provider.of<DocumentSnapshot>(context, listen: false)
+                            .data['username'],
                     'text': messageText,
                     'isMe': true,
                   };
                   socket.emit('sentAMessage', jsonEncode(messageBubbleToSend));
                   Provider.of<ChatListProvider>(context, listen: false)
                       .addMessageToChat(MessageBubble(
-                    sender: widget.username,
+                    sender:
+                        Provider.of<DocumentSnapshot>(context, listen: false)
+                            .data['username'],
                     text: messageText,
                     isMe: true,
                   ));

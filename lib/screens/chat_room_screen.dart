@@ -28,98 +28,85 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        StreamProvider<DocumentSnapshot>.value(
-          value: DatabaseService().userDataStream,
-          //initialData: UserData(username: 'loading', coins: 0),
-          catchError: (_, error) {
-            print(error);
-          },
-        ),
-        Provider(create: (_) => UserData()),
-      ],
-      child: SafeArea(
-        child: Scaffold(
-          backgroundColor: Color.fromARGB(255, 178, 223, 219),
-          body: Column(
-            children: <Widget>[
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    child: Padding(
-                      padding:
-                          EdgeInsets.only(left: displayWidth(context) * 0.02),
-                      child: Text(
-                        'Buddy',
-                        style: GoogleFonts.satisfy(
-                            fontSize: displayHeight(context) * 0.045),
-                      ),
-                    ),
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.close),
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext contextBuilder) => AlertDialog(
-                          title: Text("Close"),
-                          content:
-                              Text("Are you sure you want exit this chat?"),
-                          actions: <Widget>[
-                            FlatButton(
-                              onPressed: () {
-                                //Navigator.of(context, rootNavigator: true).pop();
-                                socket.clearListeners();
-                                socket.disconnect();
-                                Provider.of<LoadingChat>(context, listen: false)
-                                    .startLoadingChat();
-                                Provider.of<ChatListProvider>(context,
-                                        listen: false)
-                                    .eraseChatMessages();
-                                Navigator.pop(contextBuilder);
-                                Navigator.pop(context);
-                              },
-                              child: Text('Yes'),
-                            ),
-                            FlatButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                              child: Text('No'),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
-                ],
-              ),
-              Expanded(
-                child: Container(
-                  child: Center(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(30.0),
-                          topRight: Radius.circular(30.0),
-                        ),
-                      ),
-                      //This container is the entire chat pannel where messages should be displayed
-                      //child: Container(
-                      child: CustomDashChat(
-                        loading: Provider.of<LoadingChat>(context).loadingChat,
-                        uid: widget.userUID,
-                      ),
-                      //),
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: Color.fromARGB(255, 178, 223, 219),
+        body: Column(
+          children: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  child: Padding(
+                    padding:
+                        EdgeInsets.only(left: displayWidth(context) * 0.02),
+                    child: Text(
+                      'Buddy',
+                      style: GoogleFonts.satisfy(
+                          fontSize: displayHeight(context) * 0.045),
                     ),
                   ),
                 ),
-              )
-            ],
-          ),
+                IconButton(
+                  icon: Icon(Icons.close),
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext contextBuilder) => AlertDialog(
+                        title: Text("Close"),
+                        content: Text("Are you sure you want exit this chat?"),
+                        actions: <Widget>[
+                          FlatButton(
+                            onPressed: () {
+                              //Navigator.of(context, rootNavigator: true).pop();
+                              socket.clearListeners();
+                              socket.disconnect();
+                              Provider.of<LoadingChat>(context, listen: false)
+                                  .startLoadingChat();
+                              Provider.of<ChatListProvider>(context,
+                                      listen: false)
+                                  .eraseChatMessages();
+                              Navigator.pop(contextBuilder);
+                              Navigator.pop(context);
+                            },
+                            child: Text('Yes'),
+                          ),
+                          FlatButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: Text('No'),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
+            Expanded(
+              child: Container(
+                child: Center(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(30.0),
+                        topRight: Radius.circular(30.0),
+                      ),
+                    ),
+                    //This container is the entire chat pannel where messages should be displayed
+                    //child: Container(
+                    child: CustomDashChat(
+                      loading: Provider.of<LoadingChat>(context).loadingChat,
+                      uid: widget.userUID,
+                    ),
+                    //),
+                  ),
+                ),
+              ),
+            )
+          ],
         ),
       ),
     );

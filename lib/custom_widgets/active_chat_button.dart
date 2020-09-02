@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'package:buddy_flutter/services/chatListProvider.dart';
+import 'package:buddy_flutter/services/database.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -46,10 +48,17 @@ class ActiveChatsListView extends StatelessWidget {
                 print(Provider.of<LoadingChat>(context, listen: false)
                     .otherUserUsername);
               });
-              Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => ChatRoomScreen(
-                        userUID: userUID,
-                      )));
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => StreamProvider<DocumentSnapshot>.value(
+                    value: DatabaseService(uid: userUID).userDataStream,
+                    child: ChatRoomScreen(
+                      userUID: userUID,
+                    ),
+                  ),
+                ),
+              );
             },
             child: Text(
               'Look for Someone',
@@ -61,10 +70,17 @@ class ActiveChatsListView extends StatelessWidget {
           )
         : MaterialButton(
             onPressed: () {
-              Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => ChatRoomScreen(
-                        userUID: userUID,
-                      )));
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => StreamProvider<DocumentSnapshot>.value(
+                    value: DatabaseService(uid: userUID).userDataStream,
+                    child: ChatRoomScreen(
+                      userUID: userUID,
+                    ),
+                  ),
+                ),
+              );
             },
             color: Colors.black,
             elevation: 10.0,

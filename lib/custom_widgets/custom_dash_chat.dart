@@ -1,10 +1,12 @@
 import 'package:buddy_flutter/custom_widgets/customChatView.dart';
 import 'package:buddy_flutter/services/database.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:buddy_flutter/size_helpers.dart';
+import 'package:provider/provider.dart';
 
 class CustomDashChat extends StatefulWidget {
   final bool loading;
@@ -16,23 +18,14 @@ class CustomDashChat extends StatefulWidget {
 }
 
 class _CustomDashChatState extends State<CustomDashChat> {
-  String username;
-
   @override
   void initState() {
-    DatabaseService()
-        .userDataCollection
-        .document(widget.uid)
-        .get()
-        .then((value) {
-      username = value.data['username'];
-    });
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return widget.loading
+    return widget.loading || Provider.of<DocumentSnapshot>(context) == null
         ? Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -48,8 +41,6 @@ class _CustomDashChatState extends State<CustomDashChat> {
               ],
             ),
           )
-        : CustomChatView(
-            username: username,
-          );
+        : CustomChatView();
   }
 }
