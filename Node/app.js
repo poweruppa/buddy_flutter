@@ -9,56 +9,88 @@ var allUsers = {};
 var app = express();
 var server = app.listen(4000, function(){
     console.log('listening on port 4000');
+    console.log(queue + ' this is the current q');
 });
 
 //Static files
 app.use(express.static('public'));
 
-//Find a partner to chat with
-var findPeerForLoneSocket = function(socket){
-    if(queue){
-        //found someone in the queue
-        var peer = queue.pop();
-        var room = socket.id + '#' + peer.id;
-        //join them
-        peer.join(room);
-        socket.join(room);
-        //register room to their names
-        rooms[peer.id] = room;
-        rooms[socket.id] = room;
-        //exhange names between the two sockets and start the chat
-        // exchange names between the two of them and start the chat
-        peer.emit('chat start', {'name': names[socket.id], 'room':room});
-        socket.emit('chat start', {'name': names[peer.id], 'room':room});
-    }else{
-        //push lone socket into the queue
-        queue.push(socket);
-    }
-}
+
 
 //Socket setup
 var io = socket(server);
-
+var findPeerForLoneSocket = function(loneSocket){
+    if(queue.length > 0){
+        //found someone in the queue
+        if(rooms[loneSocket.id] != undefined){
+            loneSocket.leave(rooms[loneSocket.id]);
+            console.log('socket just disconencted from dead room');
+        }
+        console.log('found someone in queue')
+        var peer = queue.pop();
+        console.log('this is the peer ' + peer.id);
+        var room = loneSocket.id + '#' + peer.id;
+        console.log('this is the room ' + room);
+        //join them
+        peer.join(room);
+        loneSocket.join(room);
+        //register room to their names
+        rooms[peer.id] = room;
+        rooms[loneSocket.id] = room;
+        io.in(room).emit('foundAPartner');
+        console.log(queue);
+    }else{
+        //push lone socket into the queue
+        queue.push(loneSocket);
+        console.log('a socket has entered the q ' + loneSocket.id);
+        //console.log(queue);
+    }
+}
 io.on('connection', function(socket){
-    console.log('socket has coonected:' + ' ' + socket.id);
-
-    //listen for incoming messages
-    socket.on('chat',function(data){
-        console.log(data);
-        io.emit('chat',data);
-    });
-
+    allUsers[socket.id] = socket;
+    console.log('socket has coonected and added to allUsers:' + ' ' + socket.id);
+    findPeerForLoneSocket(socket);
     //listen for typing
     socket.on('typing',function(data){
         socket.broadcast.emit('typing',data)
     });
     //listen for disconnect
     socket.on('disconnect', function () {
-        console.log('socket ' + socket.id + ' has disconnected');
+        console.log(rooms[socket.id]);
+        if(rooms[socket.id] != undefined){
+            //if the socket was already in a room
+            console.log('socket ' + socket.id + ' has disconnected');
+            var room = rooms[socket.id];
+            socket.broadcast.to(room).emit('partnerHasDisconnected');
+            var peer = room.split('#');
+            var peerID = peer[1];
+            console.log(peerID + ' this is the peer id');
+            socket.leave(room);
+            delete room;
+            delete allUsers[socket.id];
+            console.log(rooms + 'this are the rooms');
+        }
+        else{
+            console.log('user is not in a room');
+            console.log(rooms);
+            var index = queue.indexOf(socket);
+            console.log(index);
+            if (index > -1) {
+                console.log('found user in queue, taking him out...');
+                queue.splice(index,1);
+                //delete allUsers[socket.id];
+            }
+            delete allUsers[socket.id];
+            console.log(allUsers + 'this are the users');
+            console.log(queue + ' this is the q');
+            console.log(socket.id + ' has disconected');
+        }
+        
     });
-    //to implement listen to login
-    socket.on('login',function(data){
-        console.log(data);
+    //triggered when socket wants to look for another partner
+    socket.on('lookForANewPartner',function(){
+        delete rooms[socket.id];
+        findPeerForLoneSocket(socket);
     });
     //listen for sentAMessage command from flutter app
     socket.on('sentAMessage',function(data){

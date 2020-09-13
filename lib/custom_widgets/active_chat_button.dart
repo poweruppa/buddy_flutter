@@ -21,10 +21,49 @@ class ActiveChatsListView extends StatelessWidget {
         ? MaterialButton(
             onPressed: () {
               socket.connect();
-              socket.on('connect', (_) {
+              socket.on('foundAPartner', (_) {
                 Provider.of<LoadingChat>(context, listen: false)
                     .stopLoadingChat();
                 socket.emit('sendUsernameToServer', username);
+              });
+              socket.on('partnerHasDisconnected', (_) {
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text("Partner has disconnected"),
+                        content:
+                            Text("Would you like to look for a new partner?"),
+                        actions: <Widget>[
+                          FlatButton(
+                            child: Text('Yes'),
+                            onPressed: () {
+                              Provider.of<LoadingChat>(context, listen: false)
+                                  .startLoadingChat();
+                              Provider.of<ChatListProvider>(context,
+                                      listen: false)
+                                  .eraseChatMessages();
+                              socket.emit('lookForANewPartner');
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                          FlatButton(
+                            child: Text("Close"),
+                            onPressed: () {
+                              socket.disconnect();
+                              socket.clearListeners();
+                              Provider.of<LoadingChat>(context, listen: false)
+                                  .startLoadingChat();
+                              Provider.of<ChatListProvider>(context,
+                                      listen: false)
+                                  .eraseChatMessages();
+                              Navigator.of(context).pop();
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                        ],
+                      );
+                    });
               });
               socket.on('disconnect', (_) {
                 socket.clearListeners();

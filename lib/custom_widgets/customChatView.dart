@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:buddy_flutter/services/chatListProvider.dart';
 import 'package:buddy_flutter/services/socketIOClient.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
