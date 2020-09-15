@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class LoadingChat extends ChangeNotifier {
   bool loadingChat = true;
+  bool otherUserIsTyping = false;
   String otherUserUsername;
 
   void changeOtherUserUsername(String username) {
@@ -16,6 +17,16 @@ class LoadingChat extends ChangeNotifier {
 
   void stopLoadingChat() {
     loadingChat = false;
+    notifyListeners();
+  }
+
+  void otherUserStartsTyping() {
+    otherUserIsTyping = true;
+    notifyListeners();
+  }
+
+  void otherUserStopsTyping() {
+    otherUserIsTyping = false;
     notifyListeners();
   }
 

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:buddy_flutter/custom_widgets/customChatView.dart';
 import 'package:buddy_flutter/services/chatListProvider.dart';
 import 'package:buddy_flutter/services/database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -10,6 +11,7 @@ import 'package:buddy_flutter/services/loading_chat.dart';
 import 'package:buddy_flutter/custom_widgets/MessageBubble.dart';
 import 'package:buddy_flutter/screens/chat_room_screen.dart';
 import 'package:buddy_flutter/size_helpers.dart';
+import 'package:path/path.dart';
 
 class ActiveChatsListView extends StatelessWidget {
   final String userUID;
@@ -30,38 +32,45 @@ class ActiveChatsListView extends StatelessWidget {
                 showDialog(
                     context: context,
                     builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: Text("Partner has disconnected"),
-                        content:
-                            Text("Would you like to look for a new partner?"),
-                        actions: <Widget>[
-                          FlatButton(
-                            child: Text('Yes'),
-                            onPressed: () {
-                              Provider.of<LoadingChat>(context, listen: false)
-                                  .startLoadingChat();
-                              Provider.of<ChatListProvider>(context,
-                                      listen: false)
-                                  .eraseChatMessages();
-                              socket.emit('lookForANewPartner');
-                              Navigator.of(context).pop();
-                            },
-                          ),
-                          FlatButton(
-                            child: Text("Close"),
-                            onPressed: () {
-                              socket.disconnect();
-                              socket.clearListeners();
-                              Provider.of<LoadingChat>(context, listen: false)
-                                  .startLoadingChat();
-                              Provider.of<ChatListProvider>(context,
-                                      listen: false)
-                                  .eraseChatMessages();
-                              Navigator.of(context).pop();
-                              Navigator.of(context).pop();
-                            },
-                          ),
-                        ],
+                      return WillPopScope(
+                        onWillPop: () {
+                          return Future.value(false);
+                        },
+                        child: AlertDialog(
+                          title: Text("Partner has disconnected"),
+                          content:
+                              Text("Would you like to look for a new partner?"),
+                          actions: <Widget>[
+                            FlatButton(
+                              child: Text('Yes'),
+                              onPressed: () {
+                                Provider.of<LoadingChat>(context, listen: false)
+                                    .startLoadingChat();
+                                Provider.of<ChatListProvider>(context,
+                                        listen: false)
+                                    .eraseChatMessages();
+                                socket.emit('lookForANewPartner');
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                            FlatButton(
+                              child: Text("Close"),
+                              onPressed: () {
+                                socket.disconnect();
+                                socket.clearListeners();
+                                Provider.of<LoadingChat>(context, listen: false)
+                                    .startLoadingChat();
+                                Provider.of<ChatListProvider>(context,
+                                        listen: false)
+                                    .eraseChatMessages();
+                                Navigator.popUntil(
+                                  context,
+                                  ModalRoute.withName('/'),
+                                );
+                              },
+                            ),
+                          ],
+                        ),
                       );
                     });
               });
@@ -79,6 +88,16 @@ class ActiveChatsListView extends StatelessWidget {
                   text: decodedData['text'],
                   isMe: false,
                 ));
+              });
+              socket.on('otherUserIsTyping', (_) {
+                print('other user is typing');
+                Provider.of<LoadingChat>(context, listen: false)
+                    .otherUserStartsTyping();
+              });
+              socket.on('notTyping', (_) {
+                print('user is not typing');
+                Provider.of<LoadingChat>(context, listen: false)
+                    .otherUserStopsTyping();
               });
               socket.on('sendUsernameToServer', (data) {
                 print(data + " " + 'this is the data');

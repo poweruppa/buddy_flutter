@@ -15,8 +15,6 @@ var server = app.listen(4000, function(){
 //Static files
 app.use(express.static('public'));
 
-
-
 //Socket setup
 var io = socket(server);
 var findPeerForLoneSocket = function(loneSocket){
@@ -47,12 +45,21 @@ var findPeerForLoneSocket = function(loneSocket){
     }
 }
 io.on('connection', function(socket){
+
+    function notTyping(){
+        socket.broadcast.to(rooms[socket.id]).emit('notTyping');
+    }
+
     allUsers[socket.id] = socket;
+
     console.log('socket has coonected and added to allUsers:' + ' ' + socket.id);
+
     findPeerForLoneSocket(socket);
     //listen for typing
-    socket.on('typing',function(data){
-        socket.broadcast.emit('typing',data)
+    socket.on('userIsTyping',function(){
+        console.log('user is typing');
+        socket.broadcast.to(rooms[socket.id]).emit('otherUserIsTyping');
+        setTimeout(notTyping, 5000);
     });
     //listen for disconnect
     socket.on('disconnect', function () {

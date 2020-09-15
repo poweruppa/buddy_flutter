@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:buddy_flutter/services/chatListProvider.dart';
+import 'package:buddy_flutter/services/loading_chat.dart';
 import 'package:buddy_flutter/services/socketIOClient.dart';
+import 'package:buddy_flutter/size_helpers.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:buddy_flutter/custom_widgets/MessageBubble.dart';
@@ -41,6 +43,14 @@ class _CustomChatViewState extends State<CustomChatView> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
+        Container(
+          height: displayHeight(context) * 0.03,
+          child: Text(
+            Provider.of<LoadingChat>(context).otherUserIsTyping == true
+                ? 'Typing'
+                : 'data',
+          ),
+        ),
         Expanded(
           child: ListView.builder(
             reverse: true,
@@ -90,6 +100,7 @@ class _CustomChatViewState extends State<CustomChatView> {
                   controller: messageTextController,
                   onChanged: (value) {
                     //Do something with the user input.
+                    socket.emit('userIsTyping');
                     messageText = value;
                   },
                 ),
