@@ -29,50 +29,8 @@ class ActiveChatsListView extends StatelessWidget {
                 socket.emit('sendUsernameToServer', username);
               });
               socket.on('partnerHasDisconnected', (_) {
-                showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return WillPopScope(
-                        onWillPop: () {
-                          return Future.value(false);
-                        },
-                        child: AlertDialog(
-                          title: Text("Partner has disconnected"),
-                          content:
-                              Text("Would you like to look for a new partner?"),
-                          actions: <Widget>[
-                            FlatButton(
-                              child: Text('Yes'),
-                              onPressed: () {
-                                Provider.of<LoadingChat>(context, listen: false)
-                                    .startLoadingChat();
-                                Provider.of<ChatListProvider>(context,
-                                        listen: false)
-                                    .eraseChatMessages();
-                                socket.emit('lookForANewPartner');
-                                Navigator.of(context).pop();
-                              },
-                            ),
-                            FlatButton(
-                              child: Text("Close"),
-                              onPressed: () {
-                                socket.disconnect();
-                                socket.clearListeners();
-                                Provider.of<LoadingChat>(context, listen: false)
-                                    .startLoadingChat();
-                                Provider.of<ChatListProvider>(context,
-                                        listen: false)
-                                    .eraseChatMessages();
-                                Navigator.popUntil(
-                                  context,
-                                  ModalRoute.withName('/'),
-                                );
-                              },
-                            ),
-                          ],
-                        ),
-                      );
-                    });
+                Provider.of<LoadingChat>(context, listen: false)
+                    .showPartnerDisconnectedDialog();
               });
               socket.on('disconnect', (_) {
                 socket.clearListeners();

@@ -63,6 +63,42 @@ class _CustomChatViewState extends State<CustomChatView> {
           ),
         ),
         Container(
+          child: Provider.of<LoadingChat>(context).showDisconnectedPartnerDialog
+              ? AlertDialog(
+                  title: Text("Partner has disconnected"),
+                  content: Text("Would you like to look for a new partner?"),
+                  actions: <Widget>[
+                    FlatButton(
+                      child: Text('Yes'),
+                      onPressed: () {
+                        Provider.of<LoadingChat>(context, listen: false)
+                            .startLoadingChat();
+                        Provider.of<ChatListProvider>(context, listen: false)
+                            .eraseChatMessages();
+                        socket.emit('lookForANewPartner');
+                        Provider.of<LoadingChat>(context, listen: false)
+                            .hidePartnerDisconnectedDialog();
+                      },
+                    ),
+                    FlatButton(
+                      child: Text("Close"),
+                      onPressed: () {
+                        socket.disconnect();
+                        socket.clearListeners();
+                        Provider.of<LoadingChat>(context, listen: false)
+                            .startLoadingChat();
+                        Provider.of<ChatListProvider>(context, listen: false)
+                            .eraseChatMessages();
+                        Provider.of<LoadingChat>(context, listen: false)
+                            .hidePartnerDisconnectedDialog();
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ],
+                )
+              : null,
+        ),
+        Container(
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
