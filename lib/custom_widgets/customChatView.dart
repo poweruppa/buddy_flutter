@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:buddy_flutter/services/chatListProvider.dart';
 import 'package:buddy_flutter/services/loading_chat.dart';
 import 'package:buddy_flutter/services/socketIOClient.dart';
@@ -7,6 +8,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:buddy_flutter/custom_widgets/MessageBubble.dart';
 import 'package:provider/provider.dart';
+import 'package:slide_popup_dialog/slide_popup_dialog.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:buddy_flutter/custom_widgets/ImageBubble.dart';
 
 class CustomChatView extends StatefulWidget {
 //  final String username;
@@ -18,23 +22,64 @@ class CustomChatView extends StatefulWidget {
 class _CustomChatViewState extends State<CustomChatView> {
   final messageTextController = TextEditingController();
   String messageText;
+  File _image;
+  final picker = ImagePicker();
 
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-  }
-
-  @override
-  void didUpdateWidget(CustomChatView oldWidget) {
-    // TODO: implement didUpdateWidget
-    super.didUpdateWidget(oldWidget);
-  }
-
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    super.dispose();
+  Future getImage() async {
+    final pickedFile = await picker.getImage(source: ImageSource.gallery);
+    setState(() {
+      if (pickedFile != null) {
+        _image = File(pickedFile.path);
+        List<int> imageBytes = _image.readAsBytesSync();
+        String base64Image = base64Encode(imageBytes);
+        showDialog(
+          context: context,
+          child: AlertDialog(
+            title: Text('Send this image?'),
+            actions: <Widget>[
+              FlatButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('No'),
+              ),
+              FlatButton(
+                onPressed: () {
+                  var imageBubbleToSend = {
+                    'sender':
+                        Provider.of<DocumentSnapshot>(context, listen: false)
+                            .data['username'],
+                    'text': null,
+                    'isMe': true,
+                    'imageToDisplay': base64Image,
+                  };
+                  socket.emit(
+                    'sentAnImage',
+                    jsonEncode(imageBubbleToSend),
+                  );
+                  Provider.of<ChatListProvider>(context, listen: false)
+                      .addMessageToChat(
+                    MessageBubble(
+                      sender:
+                          Provider.of<DocumentSnapshot>(context, listen: false)
+                              .data['username'],
+                      text: null,
+                      isMe: true,
+                      imageToDisplay: _image,
+                    ),
+                  );
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pop();
+                },
+                child: Text('Yes'),
+              )
+            ],
+          ),
+        );
+      } else {
+        print('no image selected');
+      }
+    });
   }
 
   @override
@@ -99,13 +144,59 @@ class _CustomChatViewState extends State<CustomChatView> {
               : null,
         ),
         Container(
+          color: Color.fromARGB(255, 238, 238, 238),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
+              //attach file button
+              RawMaterialButton(
+                onPressed: () {
+                  //messageTextController.clear();
+                  //Implement send functionality.
+                  FocusScope.of(context).requestFocus(new FocusNode());
+                  showSlideDialog(
+                    context: context,
+                    child: Column(
+                      children: <Widget>[
+                        Row(
+                          children: <Widget>[
+                            RawMaterialButton(
+                              onPressed: getImage,
+                              child: Icon(Icons.image),
+                            )
+                          ],
+                        )
+                      ],
+                    ),
+                  );
+                  var messageBubbleToSend = {
+                    'sender':
+                        Provider.of<DocumentSnapshot>(context, listen: false)
+                            .data['username'],
+                    'text': messageText,
+                    'isMe': true,
+                  };
+//                  socket.emit('sentAMessage', jsonEncode(messageBubbleToSend));
+//                  Provider.of<ChatListProvider>(context, listen: false)
+//                      .addMessageToChat(MessageBubble(
+//                    sender:
+//                        Provider.of<DocumentSnapshot>(context, listen: false)
+//                            .data['username'],
+//                    text: messageText,
+//                    isMe: true,
+//                  ));
+                },
+                child: Icon(
+                  Icons.attach_file,
+                  size: 35.0,
+                ),
+                padding: EdgeInsets.all(4.0),
+              ),
               Expanded(
                 child: TextField(
                   decoration: InputDecoration(
                     hintText: 'Type your message here...',
+                    border: InputBorder.none,
                     filled: true,
                     fillColor: Color.fromARGB(255, 238, 238, 238),
                     contentPadding:
@@ -142,26 +233,28 @@ class _CustomChatViewState extends State<CustomChatView> {
                 ),
               ),
               RawMaterialButton(
-                fillColor: Color.fromARGB(255, 238, 238, 238),
                 onPressed: () {
-                  messageTextController.clear();
-                  //Implement send functionality.
-                  var messageBubbleToSend = {
-                    'sender':
-                        Provider.of<DocumentSnapshot>(context, listen: false)
-                            .data['username'],
-                    'text': messageText,
-                    'isMe': true,
-                  };
-                  socket.emit('sentAMessage', jsonEncode(messageBubbleToSend));
-                  Provider.of<ChatListProvider>(context, listen: false)
-                      .addMessageToChat(MessageBubble(
-                    sender:
-                        Provider.of<DocumentSnapshot>(context, listen: false)
-                            .data['username'],
-                    text: messageText,
-                    isMe: true,
-                  ));
+                  if (messageText != null) {
+                    messageTextController.clear();
+                    //Implement send functionality.
+                    var messageBubbleToSend = {
+                      'sender':
+                          Provider.of<DocumentSnapshot>(context, listen: false)
+                              .data['username'],
+                      'text': messageText,
+                      'isMe': true,
+                    };
+                    socket.emit(
+                        'sentAMessage', jsonEncode(messageBubbleToSend));
+                    Provider.of<ChatListProvider>(context, listen: false)
+                        .addMessageToChat(MessageBubble(
+                      sender:
+                          Provider.of<DocumentSnapshot>(context, listen: false)
+                              .data['username'],
+                      text: messageText,
+                      isMe: true,
+                    ));
+                  }
                 },
                 child: Icon(
                   Icons.send,

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:buddy_flutter/custom_widgets/MessageBubble.dart';
 
 class MessageList extends StatelessWidget {
-  List<MessageBubble> messages = [
+  final List<MessageBubble> messages = [
     MessageBubble(
       sender: 'juan',
       text: 'prueba',

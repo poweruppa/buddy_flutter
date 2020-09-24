@@ -1,26 +1,19 @@
 import 'package:flutter/material.dart';
-import 'dart:io';
 
-class MessageBubble extends StatelessWidget {
-  MessageBubble({this.sender, this.text, this.isMe, this.imageToDisplay});
+class ImageBubble extends StatelessWidget {
+  ImageBubble({this.sender, this.text, this.isMe});
 
   final String sender;
   final String text;
   final bool isMe;
-  final File imageToDisplay;
 
-  MessageBubble.fromJson(Map<String, dynamic> json)
+  ImageBubble.fromJson(Map<String, dynamic> json)
       : sender = json['sender'],
         text = json['text'],
-        isMe = json['isMe'],
-        imageToDisplay = json['imageToDisplay'];
+        isMe = json['isMe'];
 
-  Map<String, dynamic> toJson() => {
-        'sender': sender,
-        'text': text,
-        'isMe': isMe,
-        'imageToDisplay': imageToDisplay
-      };
+  Map<String, dynamic> toJson() =>
+      {'sender': sender, 'text': text, 'isMe': isMe};
 
   @override
   Widget build(BuildContext context) {
@@ -52,16 +45,11 @@ class MessageBubble extends StatelessWidget {
             child: Padding(
               padding:
                   const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
-              child: text != null
-                  ? Text(
-                      '$text ',
-                      style: TextStyle(
-                          fontSize: 15.0,
-                          color: isMe ? Colors.black : Colors.black),
-                    )
-                  : Container(
-                      child: Image.file(imageToDisplay),
-                    ),
+              child: Text(
+                '$text ',
+                style: TextStyle(
+                    fontSize: 15.0, color: isMe ? Colors.black : Colors.black),
+              ),
             ),
           ),
         ],

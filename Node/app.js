@@ -57,7 +57,6 @@ io.on('connection', function(socket){
     findPeerForLoneSocket(socket);
     //listen for typing
     socket.on('userIsTyping',function(){
-        console.log('user is typing');
         socket.broadcast.to(rooms[socket.id]).emit('otherUserIsTyping');
         setTimeout(notTyping, 5000);
     });
@@ -101,12 +100,17 @@ io.on('connection', function(socket){
     });
     //listen for sentAMessage command from flutter app
     socket.on('sentAMessage',function(data){
-        socket.broadcast.emit('sentAMessage', data);
+        socket.broadcast.to(rooms[socket.id]).emit('sentAMessage', data);
+        console.log(data);
+    });
+    //listen for an image sent to the server
+    socket.on('sentAnImage',function(data){
+        socket.broadcast.to(rooms[socket.id]).emit('sentAnImage', data);
         console.log(data);
     });
     //liston for usernmae sent from server
     socket.on('sendUsernameToServer',function(data){
-        socket.broadcast.emit('sendUsernameToServer', data);
+        socket.broadcast.to(rooms[socket.id]).emit('sendUsernameToServer', data);
         console.log(data);
     });
 });

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 import 'package:buddy_flutter/custom_widgets/customChatView.dart';
 import 'package:buddy_flutter/services/chatListProvider.dart';
 import 'package:buddy_flutter/services/database.dart';
@@ -12,10 +13,19 @@ import 'package:buddy_flutter/custom_widgets/MessageBubble.dart';
 import 'package:buddy_flutter/screens/chat_room_screen.dart';
 import 'package:buddy_flutter/size_helpers.dart';
 import 'package:path/path.dart';
+import 'dart:io' as Io;
+import 'package:path_provider/path_provider.dart';
 
 class ActiveChatsListView extends StatelessWidget {
   final String userUID;
   final String username;
+
+  Future<String> get _localPath async {
+    final directory = await getApplicationDocumentsDirectory();
+
+    return directory.path;
+  }
+
   ActiveChatsListView({this.userUID, this.username});
   @override
   Widget build(BuildContext context) {
@@ -45,6 +55,32 @@ class ActiveChatsListView extends StatelessWidget {
                   sender: decodedData['sender'],
                   text: decodedData['text'],
                   isMe: false,
+                ));
+              });
+              socket.on('sentAnImage', (data) async {
+                var decodedData = jsonDecode(data);
+
+                var decodedImage = base64Decode(decodedData['imageToDisplay']);
+                //var file = Io.File(_localPath);
+                //file.writeAsBytesSync(decodedImage);
+                Future<String> _createFileFromString() async {
+                  final encodedStr = decodedData['imageToDisplay'];
+                  Uint8List bytes = base64.decode(encodedStr);
+                  String dir = (await getApplicationDocumentsDirectory()).path;
+                  Io.File file = Io.File("$dir/" +
+                      DateTime.now().millisecondsSinceEpoch.toString() +
+                      ".jpg");
+                  await file.writeAsBytes(bytes);
+                  return file.path;
+                }
+
+                print(_createFileFromString());
+                Provider.of<ChatListProvider>(context, listen: false)
+                    .addMessageToChat(MessageBubble(
+                  sender: decodedData['sender'],
+                  text: decodedData['text'],
+                  isMe: false,
+                  imageToDisplay: Io.File(await _createFileFromString()),
                 ));
               });
               socket.on('otherUserIsTyping', (_) {
