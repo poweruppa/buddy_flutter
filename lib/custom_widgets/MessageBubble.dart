@@ -60,7 +60,11 @@ class MessageBubble extends StatelessWidget {
                           color: isMe ? Colors.black : Colors.black),
                     )
                   : Container(
-                      child: Image.file(imageToDisplay),
+                      child: Image.file(
+                        imageToDisplay,
+                        width: 120,
+                        filterQuality: FilterQuality.low,
+                      ),
                     ),
             ),
           ),

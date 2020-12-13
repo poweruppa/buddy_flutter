@@ -5,6 +5,7 @@ class LoadingChat extends ChangeNotifier {
   bool loadingChat = true;
   bool otherUserIsTyping = false;
   bool showDisconnectedPartnerDialog = false;
+  bool showFriendRequest = false;
   String otherUserUsername;
 
   void changeOtherUserUsername(String username) {
@@ -39,6 +40,16 @@ class LoadingChat extends ChangeNotifier {
 
   void hidePartnerDisconnectedDialog() {
     showDisconnectedPartnerDialog = false;
+    notifyListeners();
+  }
+
+  void showFriendRequestDialog() {
+    showFriendRequest = true;
+    notifyListeners();
+  }
+
+  void hideFriendRequestDialog() {
+    showFriendRequest = false;
     notifyListeners();
   }
 

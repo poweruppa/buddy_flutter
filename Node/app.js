@@ -5,11 +5,17 @@ var rooms = {};
 var names = {};
 var allUsers = {};
 
+
+function logRoom(){
+    console.log(rooms);
+}
+
 //app setup
 var app = express();
 var server = app.listen(4000, function(){
     console.log('listening on port 4000');
     console.log(queue + ' this is the current q');
+    //setInterval(logRoom, 5000);
 });
 
 //Static files
@@ -20,6 +26,7 @@ var io = socket(server);
 var findPeerForLoneSocket = function(loneSocket){
     if(queue.length > 0){
         //found someone in the queue
+        // if socket is not registered to a room
         if(rooms[loneSocket.id] != undefined){
             loneSocket.leave(rooms[loneSocket.id]);
             console.log('socket just disconencted from dead room');
@@ -36,7 +43,7 @@ var findPeerForLoneSocket = function(loneSocket){
         rooms[peer.id] = room;
         rooms[loneSocket.id] = room;
         io.in(room).emit('foundAPartner');
-        console.log(queue);
+        //console.log(queue);
     }else{
         //push lone socket into the queue
         queue.push(loneSocket);
@@ -71,10 +78,11 @@ io.on('connection', function(socket){
             var peer = room.split('#');
             var peerID = peer[1];
             console.log(peerID + ' this is the peer id');
-            socket.leave(room);
-            delete room;
+            delete rooms[socket.id];
             delete allUsers[socket.id];
-            console.log(rooms + 'this are the rooms');
+            socket.leave(room);
+            
+            console.log(rooms + ' this are the rooms');
         }
         else{
             console.log('user is not in a room');
@@ -104,7 +112,7 @@ io.on('connection', function(socket){
         console.log(data);
     });
     //listen for an image sent to the server
-    socket.on('sentAnImage',function(data){
+    socket.on('sentAnImage', function(data){
         socket.broadcast.to(rooms[socket.id]).emit('sentAnImage', data);
         console.log(data);
     });
@@ -113,5 +121,9 @@ io.on('connection', function(socket){
         socket.broadcast.to(rooms[socket.id]).emit('sendUsernameToServer', data);
         console.log(data);
     });
+    socket.on('sendingFriendRequest',function(){
+        console.log('received friend request');
+        socket.broadcast.to(rooms[socket.id]).emit('sendingFriendRequest');
+    })
 });
 

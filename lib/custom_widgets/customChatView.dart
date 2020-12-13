@@ -108,6 +108,28 @@ class _CustomChatViewState extends State<CustomChatView> {
           ),
         ),
         Container(
+          child: Provider.of<LoadingChat>(context).showFriendRequest
+              ? AlertDialog(
+                  title: Text(
+                      '${Provider.of<DocumentSnapshot>(context).data['username']} wants to add you as their friend :)'),
+                  content: Text("Do you accept?"),
+                  actions: <Widget>[
+                    FlatButton(
+                      child: Text('Yes'),
+                      onPressed: () {},
+                    ),
+                    FlatButton(
+                      child: Text("No"),
+                      onPressed: () {
+                        Provider.of<LoadingChat>(context, listen: false)
+                            .hideFriendRequestDialog();
+                      },
+                    ),
+                  ],
+                )
+              : null,
+        ),
+        Container(
           child: Provider.of<LoadingChat>(context).showDisconnectedPartnerDialog
               ? AlertDialog(
                   title: Text("Partner has disconnected"),
@@ -123,6 +145,8 @@ class _CustomChatViewState extends State<CustomChatView> {
                         socket.emit('lookForANewPartner');
                         Provider.of<LoadingChat>(context, listen: false)
                             .hidePartnerDisconnectedDialog();
+                        Provider.of<LoadingChat>(context, listen: false)
+                            .hideFriendRequestDialog();
                       },
                     ),
                     FlatButton(
@@ -136,6 +160,8 @@ class _CustomChatViewState extends State<CustomChatView> {
                             .eraseChatMessages();
                         Provider.of<LoadingChat>(context, listen: false)
                             .hidePartnerDisconnectedDialog();
+                        Provider.of<LoadingChat>(context, listen: false)
+                            .hideFriendRequestDialog();
                         Navigator.pop(context);
                       },
                     ),
@@ -153,22 +179,45 @@ class _CustomChatViewState extends State<CustomChatView> {
                 onPressed: () {
                   //messageTextController.clear();
                   //Implement send functionality.
-                  FocusScope.of(context).requestFocus(new FocusNode());
-                  showSlideDialog(
-                    context: context,
-                    child: Column(
-                      children: <Widget>[
-                        Row(
-                          children: <Widget>[
-                            RawMaterialButton(
-                              onPressed: getImage,
-                              child: Icon(Icons.image),
+                  //FocusScope.of(context).requestFocus(new FocusNode());
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text('Friend request'),
+                          content: Text('Send friend request?'),
+                          actions: <Widget>[
+                            FlatButton(
+                              child: Text('Yes'),
+                              onPressed: () {
+                                socket.emit('sendingFriendRequest');
+                                Navigator.pop(context);
+                              },
+                            ),
+                            FlatButton(
+                              child: Text('No'),
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
                             )
                           ],
-                        )
-                      ],
-                    ),
-                  );
+                        );
+                      });
+//                  showSlideDialog(
+//                    context: context,
+//                    child: Column(
+//                      children: <Widget>[
+//                        Row(
+//                          children: <Widget>[
+//                            RawMaterialButton(
+//                              onPressed: getImage,
+//                              child: Icon(Icons.image),
+//                            )
+//                          ],
+//                        )
+//                      ],
+//                    ),
+//                  );
                   var messageBubbleToSend = {
                     'sender':
                         Provider.of<DocumentSnapshot>(context, listen: false)
@@ -187,7 +236,7 @@ class _CustomChatViewState extends State<CustomChatView> {
 //                  ));
                 },
                 child: Icon(
-                  Icons.attach_file,
+                  Icons.person_add,
                   size: 35.0,
                 ),
                 padding: EdgeInsets.all(4.0),

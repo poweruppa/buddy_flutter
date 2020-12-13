@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:typed_data';
-import 'package:buddy_flutter/custom_widgets/customChatView.dart';
 import 'package:buddy_flutter/services/chatListProvider.dart';
 import 'package:buddy_flutter/services/database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -12,7 +11,6 @@ import 'package:buddy_flutter/services/loading_chat.dart';
 import 'package:buddy_flutter/custom_widgets/MessageBubble.dart';
 import 'package:buddy_flutter/screens/chat_room_screen.dart';
 import 'package:buddy_flutter/size_helpers.dart';
-import 'package:path/path.dart';
 import 'dart:io' as Io;
 import 'package:path_provider/path_provider.dart';
 
@@ -22,8 +20,17 @@ class ActiveChatsListView extends StatelessWidget {
 
   Future<String> get _localPath async {
     final directory = await getApplicationDocumentsDirectory();
-
     return directory.path;
+  }
+
+  Future<String> _createFileFromString(decodedData) async {
+    final encodedStr = decodedData['imageToDisplay'];
+    Uint8List bytes = base64.decode(encodedStr);
+    String dir = (await getApplicationDocumentsDirectory()).path;
+    Io.File file = Io.File(
+        "$dir/" + DateTime.now().millisecondsSinceEpoch.toString() + ".jpg");
+    await file.writeAsBytes(bytes);
+    return file.path;
   }
 
   ActiveChatsListView({this.userUID, this.username});
@@ -59,28 +66,15 @@ class ActiveChatsListView extends StatelessWidget {
               });
               socket.on('sentAnImage', (data) async {
                 var decodedData = jsonDecode(data);
-
-                var decodedImage = base64Decode(decodedData['imageToDisplay']);
-                //var file = Io.File(_localPath);
-                //file.writeAsBytesSync(decodedImage);
-                Future<String> _createFileFromString() async {
-                  final encodedStr = decodedData['imageToDisplay'];
-                  Uint8List bytes = base64.decode(encodedStr);
-                  String dir = (await getApplicationDocumentsDirectory()).path;
-                  Io.File file = Io.File("$dir/" +
-                      DateTime.now().millisecondsSinceEpoch.toString() +
-                      ".jpg");
-                  await file.writeAsBytes(bytes);
-                  return file.path;
-                }
-
-                print(_createFileFromString());
+                print(_createFileFromString(decodedData));
                 Provider.of<ChatListProvider>(context, listen: false)
                     .addMessageToChat(MessageBubble(
                   sender: decodedData['sender'],
                   text: decodedData['text'],
                   isMe: false,
-                  imageToDisplay: Io.File(await _createFileFromString()),
+                  imageToDisplay: Io.File(
+                    await _createFileFromString(decodedData),
+                  ),
                 ));
               });
               socket.on('otherUserIsTyping', (_) {
@@ -99,6 +93,11 @@ class ActiveChatsListView extends StatelessWidget {
                     .changeOtherUserUsername(data);
                 print(Provider.of<LoadingChat>(context, listen: false)
                     .otherUserUsername);
+              });
+              socket.on('sendingFriendRequest', (_) {
+                print('received friend request');
+                Provider.of<LoadingChat>(context, listen: false)
+                    .showFriendRequestDialog();
               });
               Navigator.push(
                 context,

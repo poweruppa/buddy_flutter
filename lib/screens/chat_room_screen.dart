@@ -66,6 +66,8 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                               Provider.of<ChatListProvider>(context,
                                       listen: false)
                                   .eraseChatMessages();
+                              Provider.of<LoadingChat>(context, listen: false)
+                                  .hideFriendRequestDialog();
                               Navigator.pop(contextBuilder);
                               Navigator.pop(context);
                             },
